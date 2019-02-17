@@ -1,15 +1,16 @@
 import r1
 from r1.filter import make_filter
 
+
 def telegram_response(chat_id, text, **kwargs):
-    return dict(method='sendMessage', chat_id=chat_id, text=text, **kwargs)
+    return dict(method="sendMessage", chat_id=chat_id, text=text, **kwargs)
 
 
 def parse_request(request):
-    chat_id = get_(request, 'message', 'chat', 'id')
-    command = get_(request, 'message', 'text')
-    if command is None or not command.startswith('/'):
-        Warning('Received invalid command. Will be ignored.')
+    chat_id = get_(request, "message", "chat", "id")
+    command = get_(request, "message", "text")
+    if command is None or not command.startswith("/"):
+        Warning("Received invalid command. Will be ignored.")
         return chat_id, None
     return chat_id, command[1:]
 
@@ -33,13 +34,13 @@ class SimpleBot:
     def add_action(self, name, target):
         if name in self.actions:
             Warning(
-                'Action `{}` was already defined. Will be overwritten.'.format(
-                    name))
+                "Action `{}` was already defined. Will be overwritten.".format(name)
+            )
         self.actions[name] = target
 
     def _sanitize_action(self, action):
-        if '@' in action:
-            return action.split('@')[0]
+        if "@" in action:
+            return action.split("@")[0]
         return action
 
     def _split_command(self, cmd):
@@ -50,7 +51,7 @@ class SimpleBot:
         action, options = self._split_command(command)
         action = self._sanitize_action(action)
         if action not in self.actions:
-            Warning('Undefined action `{}`. Will be ignored.'.format(action))
+            Warning("Undefined action `{}`. Will be ignored.".format(action))
             return None
         return self.actions[action](options, request)
 
@@ -65,25 +66,24 @@ class SimpleBot:
 
 
 def format_item(sitem):
-    return '{type}: {name} _({currency} {price:.2f})_'.format(
-        type=sitem['type'].capitalize(),
-        name=sitem['name'],
-        price=sitem['price'],
-		currency=sitem['currency']
+    return "{type}: {name} _({currency} {price:.2f})_".format(
+        type=sitem["type"].capitalize(),
+        name=sitem["name"],
+        price=sitem["price"],
+        currency=sitem["currency"],
     )
 
 
 def format_menu(items):
     if len(items) == 0:
-        return 'There was no menu for your request.'
+        return "There was no menu for your request."
     sitems = r1.serialize_menu(items)
-    return '\n'.join(format_item(sitem) for sitem in sitems)
+    return "\n".join(format_item(sitem) for sitem in sitems)
 
 
 class RestaurantBot(SimpleBot):
     def __init__(self, menu_getter, *args, **kwargs):
-        super().__init__(*args, telegram_params={'parse_mode': 'Markdown'},
-                         **kwargs)
+        super().__init__(*args, telegram_params={"parse_mode": "Markdown"}, **kwargs)
         self.get_menu = menu_getter
 
     def _menu_action(self, filters):

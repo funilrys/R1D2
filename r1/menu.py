@@ -1,56 +1,67 @@
-from datetime import timedelta
-import bs4
+"""
+Menu provider.
+"""
+
 import itertools as it
 import re
+from datetime import timedelta
+
+import bs4
 import requests
 
-from .helpers import (first_day_of_this_week, grouper, today)
-from .settings import (PARAMS, URL1, URL2)
-from .types import (DishType, MenuItem, Restaurant)
+from .helpers import first_day_of_this_week, grouper
+from .settings import PARAMS, URL
+from .types import MenuItem, Restaurant
 
 
-def get_urls(restaurant):
+def get_url(restaurant):
+    """
+    Construct the URL to call.
+    """
+
     params = PARAMS[restaurant]
-    return (URL1.format(**params), URL2.format(**params))
+    return URL.format(**params)
 
 
 def extract_name(bsitem):
-    return bsitem.find('span').text
+    """
+    Extract the menu item.
+    """
+
+    return bsitem.find("span").text
 
 
 def extract_price(bsitem):
-    reg = re.compile(r'(\d+\.?\d*)')
+    """
+    Extract the price of the price of the menu item.
+    """
+
+    reg = re.compile(r"(\d+\.?\d*)")
     mat = reg.findall(bsitem.text)
-    if len(mat) > 0:
+    if mat:
         return float(mat[0])
     return 0.0
 
 
 def extract_table(response):
-    items = bs4.BeautifulSoup(response.text, 'lxml').find(
-        'table',
-        class_='menuRestaurant').findAll('table',
-                                         class_='HauteurMenu')
-    return [(extract_name(i), extract_price(i)) for i in items[1::2]]
+    """
+    Interpret the table from the upstream table.
+    """
+    soup = bs4.BeautifulSoup(response.text, "lxml")
+    the_main_table = soup.find("table", class_="menuRestaurant")
+    menus_content = the_main_table.findAll("table", class_="HauteurMenu")
 
-
-def create_payload(page):
-    return {'fa_afficheSemaine_menurestaurant': 'Page {}'.format(page),
-            'fn_changeType': 2,
-            'fn_jourSemaine': '{}'.format(today()),
-            'fn_limite': 2 * page - 1,
-            'fn_refresh': 1,
-            'fn_numpage': page}
+    return [(extract_name(i), extract_price(i)) for i in menus_content[1::2]]
 
 
 def fetch_menu(restaurant):
-    url1, url2 = get_urls(restaurant)
-    params = PARAMS[restaurant]
-    s = requests.Session()
-    return it.chain([extract_table(s.get(url1))] +
-                    [extract_table(s.post(url2,
-                                          data=create_payload(i)))
-                     for i in range(2, params.get('pages', 2) + 1)])
+    """
+    Fetch all menus of the given restaurant.
+    """
+
+    url = get_url(restaurant)
+    req_session = requests.Session()
+    return [extract_table(req_session.get(url))]
 
 
 def split_days(items, structure):
@@ -59,20 +70,29 @@ def split_days(items, structure):
 
 
 def get_menu(restaurant):
+    """
+    Provide the complete menu of the given restaurant (for the current week=.
+    """
+
     params = PARAMS[restaurant]
-    items = split_days(fetch_menu(restaurant), params['page_structure'])
-    day_structure = params['dishes']
+    items = split_days(fetch_menu(restaurant), params["page_structure"])
+    day_structure = params["dishes"]
     first_day = first_day_of_this_week()
     menu = []
+
     for d, ms in enumerate(items):
         day = first_day + timedelta(days=d)
+        while None in ms:
+            ms.remove(None)
+
         for (name, price), t in zip(ms, day_structure):
-            menu.append(MenuItem(restaurant, day, t, name, price,
-                                 params['currency']))
+            menu.append(MenuItem(restaurant, day, t, name, price, params["currency"]))
     return menu
 
 
 def get_full_menu():
-    return (get_menu(Restaurant.r1) +
-            get_menu(Restaurant.r2) +
-            get_menu(Restaurant.r3))
+    """
+    Return the menu of all restaurants.
+    """
+
+    return get_menu(Restaurant.r1) + get_menu(Restaurant.r2) + get_menu(Restaurant.r3)

@@ -1,42 +1,57 @@
-from .types import (DishType, Restaurant)
+from .types import DishType, Restaurant
 
-
-BASE = 'http://extranet.novae-restauration.ch/'
-URL1 = BASE + 'index.php?frame=1&x={x}&y={y}&z={z}'
-URL2 = BASE + '/novae/traiteur/restauration/{html}.html?frame=1'
+BASE = "https://www.novae-restauration.ch/menus/"
+URL = BASE + "menu-week/cern/{restaurant_id}?display=columns"
 PARAMS = {
     Restaurant.r1: {
-        'x': 'd894ddae3c17b40b4fe7e16519f950f0',
-        'y': 'c7b3f79848b99a8e562a1df1d6285365',
-        'z': '33',
-        'html': 'restaurant-cern',
-        'pages': 3,
-        'page_structure': (3, 2, 2),
-        'dishes': (DishType.menu1, DishType.menu2, DishType.vegetarian,
-                   DishType.speciality, DishType.grill, DishType.pasta,
-                   DishType.pizza),
-        'currency': 'CHF'
+        "restaurant_id": "13",
+        "pages": 3,
+        "page_structure": (8, 2),
+        "dishes": (
+            DishType.menu1,
+            DishType.menu2,
+            DishType.pasta_di_guiseppe,
+            DishType.pasta,
+            DishType.pizza,
+            DishType.speciality,
+            DishType.grill,
+            DishType.vegetarian,
+            DishType.hamburger,
+        ),
+        "currency": "CHF",
     },
     Restaurant.r2: {
-        'x': 'ad3f8f75fe1e353b972afcce8e375d6e',
-        'y': '81dc9bdb52d04dc20036dbd8313ed055',
-        'z': '135',
-        'html': 'bon-app',
-        'pages': 2,
-        'page_structure': (3, 3),
-        'dishes': (DishType.menu1, DishType.menu2, DishType.vegetarian,
-                   DishType.grill, DishType.pasta, DishType.speciality),
-        'currency': 'CHF'
+        "restaurant_id": "21",
+        "pages": 2,
+        "page_structure": (11, 1),
+        "dishes": (
+            DishType.marche,
+            DishType.season,
+            DishType.vegetarian,
+            DishType.pasta_of_the_day,
+            DishType.pasta_of_the_day2,
+            DishType.speciality,
+            DishType.grill,
+            DishType.grill1,
+            DishType.grill2,
+            DishType.pizza_of_the_day,
+            DishType.pizza,
+        ),
+        "currency": "CHF",
     },
     Restaurant.r3: {
-        'x': 'fd7538322d53ecf7f708990e221d5f36',
-        'y': 'fd7538322d53ecf7f708990e221d5f36',
-        'z': '145',
-        'html': 'restaurant-cern-1',
-        'pages': 2,
-        'page_structure': (3, 3),
-        'dishes': (DishType.menu1, DishType.menu2, DishType.menu3,
-                   DishType.speciality, DishType.pizza, DishType.grill),
-        'currency': '€'
-    }
+        "restaurant_id": "33",
+        "pages": 2,
+        "page_structure": (7, 1),
+        "dishes": (
+            DishType.vegetarian_marche,
+            DishType.season,
+            DishType.atelier,
+            DishType.speciality,
+            DishType.grill,
+            DishType.pizza_of_the_day,
+            DishType.pizza,
+        ),
+        "currency": "€",
+    },
 }
