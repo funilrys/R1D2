@@ -1,5 +1,5 @@
 """
-This is the flask application started.
+This is the flask application starting point.
 """
 
 from os import getenv
