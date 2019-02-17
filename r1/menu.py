@@ -86,7 +86,9 @@ def get_menu(restaurant):
             ms.remove(None)
 
         for (name, price), t in zip(ms, day_structure):
-            menu.append(MenuItem(restaurant, day, t, name, price, params["currency"]))
+            menu.append(
+                MenuItem(restaurant, day, t, name, price, params["currency"])
+            )
     return menu
 
 
