@@ -34,7 +34,9 @@ class SimpleBot:
     def add_action(self, name, target):
         if name in self.actions:
             Warning(
-                "Action `{}` was already defined. Will be overwritten.".format(name)
+                "Action `{}` was already defined. Will be overwritten.".format(
+                    name
+                )
             )
         self.actions[name] = target
 
@@ -83,7 +85,9 @@ def format_menu(items):
 
 class RestaurantBot(SimpleBot):
     def __init__(self, menu_getter, *args, **kwargs):
-        super().__init__(*args, telegram_params={"parse_mode": "Markdown"}, **kwargs)
+        super().__init__(
+            *args, telegram_params={"parse_mode": "Markdown"}, **kwargs
+        )
         self.get_menu = menu_getter
 
     def _menu_action(self, filters):

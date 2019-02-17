@@ -97,4 +97,8 @@ def get_full_menu():
     Return the menu of all restaurants.
     """
 
-    return get_menu(Restaurant.r1) + get_menu(Restaurant.r2) + get_menu(Restaurant.r3)
+    return (
+        get_menu(Restaurant.r1)
+        + get_menu(Restaurant.r2)
+        + get_menu(Restaurant.r3)
+    )
